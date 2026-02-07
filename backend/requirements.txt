@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pandas
+prophet
+playwright
+playwright-stealth
+beautifulsoup4
+requests
+python-multipart
+motor
+python-dotenv
+pymongo
+textblob
+certifi
+tinydb

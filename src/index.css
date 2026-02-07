@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+  /* Premium Dark Theme Palette (Currently Running) */
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 262 83% 58%;
+  --accent-foreground: 0 0% 100%;
+
+  --background: 222 47% 7%;
+  --foreground: 213 31% 91%;
+  --card: 222 47% 11%;
+  --card-foreground: 213 31% 91%;
+  --border: 217 32% 17%;
+  --input: 217 32% 17%;
+  --ring: 217 91% 60%;
+  --radius: 1rem;
+  --glass-bg: rgba(13, 20, 38, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(16px);
+  --btn-secondary: #1e293b;
+  --btn-secondary-hover: #334155;
+  --btn-secondary-text: #94a3b8;
+  /* Navigation Tokens */
+  --nav-bg: rgba(13, 20, 38, 0.7);
+  --nav-border: rgba(255, 255, 255, 0.1);
+  --nav-link: #94a3b8;
+  --nav-link-hover: #ffffff;
+  --nav-btn-bg: rgba(30, 41, 59, 0.5);
+  --title-color: #ffffff;
+}
+
+[data-theme='light'] {
+  /* High-Contrast Luxury Cream Palette */
+  --background: 40 30% 96%;
+  --foreground: 222 47% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 12%;
+  --border: 217 32% 80%;
+  --input: 217 32% 90%;
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(15, 23, 42, 0.15);
+  --title-color: #0f172a;
+  --secondary-text: 215 25% 30%;
+  --btn-secondary: #f1f5f9;
+  --btn-secondary-hover: #e2e8f0;
+  --btn-secondary-text: #475569;
+
+  /* Navigation Light Tokens */
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-border: rgba(15, 23, 42, 0.08);
+  --nav-link: #475569;
+  --nav-link-hover: #0f172a;
+  --nav-btn-bg: rgba(15, 23, 42, 0.05);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+}
+
+input::placeholder {
+  color: #64748b;
+  opacity: 0.6;
+}
+
+[data-theme='light'] input::placeholder {
+  color: #94a3b8;
+}
+
+.input-styled {
+  @apply flex-1 rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.5);
+  color: hsl(var(--foreground));
+}
+
+[data-theme='dark'] .input-styled {
+  background-color: #0f172a;
+}
+
+[data-theme='light'] .input-styled {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  min-height: 100vh;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+[data-theme='dark'] body {
+  background-image:
+    radial-gradient(at 0% 0%, hsla(253, 16%, 10%, 1) 0, transparent 50%),
+    radial-gradient(at 50% 0%, hsla(225, 80%, 20%, 0.15) 0, transparent 40%),
+    radial-gradient(at 100% 0%, hsla(217, 91%, 60%, 0.08) 0, transparent 50%);
+  background-attachment: fixed;
+}
+
+[data-theme='light'] body {
+  background-image:
+    radial-gradient(at 0% 0%, hsla(40, 33%, 90%, 1) 0, transparent 50%),
+    radial-gradient(at 50% 0%, hsla(200, 39%, 80%, 0.1) 0, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(30, 49%, 95%, 1) 0, transparent 50%);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] .glass-card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='light'] .glass-card {
+  box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.15);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.glass-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+  color: white;
+  padding: 0.875rem 2rem;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
+  filter: brightness(1.1);
+}
+
+.title-gradient {
+  background: linear-gradient(to bottom right, var(--title-color) 40%, #64748b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+[data-theme='dark'] .title-gradient {
+  background: linear-gradient(to bottom right, #ffffff 40%, #94a3b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme='light'] .text-slate-400 {
+  color: hsl(var(--secondary-text));
+}
+
+[data-theme='light'] .text-slate-500 {
+  color: hsl(var(--secondary-text) / 0.8);
+}
+
+.nav-glass {
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--nav-border);
+}
+
+.nav-logo-text {
+  color: var(--title-color);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary);
+  color: var(--btn-secondary-text);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--btn-secondary-hover);
+  color: hsl(var(--foreground));
+}
+
+.nav-link {
+  color: var(--nav-link);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--nav-link-hover);
+}
+
+.nav-action-btn {
+  background: var(--nav-btn-bg);
+  color: var(--nav-link);
+  transition: all 0.2s ease;
+}
+
+.nav-action-btn:hover {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+  background-clip: content-box;
+}

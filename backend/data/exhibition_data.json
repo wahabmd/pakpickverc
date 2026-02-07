@@ -1,0 +1,106 @@
+[
+    {
+        "q": "earbuds",
+        "results": [
+            {
+                "id": "exh_eb_001",
+                "title": "Airpods Pro Gen 2 Clone (High Build Quality)",
+                "price": 3500,
+                "platform": "Daraz",
+                "image": "https://images.unsplash.com/photo-1588423770670-4599e0426829?w=300",
+                "sentiment_score": 0.88,
+                "sentiment_label": "High Demand",
+                "pos_score": 92.4,
+                "growth": "+22.5%",
+                "advice": "Extremely high sell-through rate on Pakistani marketplaces.",
+                "rating": 4.8,
+                "reviews": 1250
+            },
+            {
+                "id": "exh_eb_002",
+                "title": "Audionic Airbud 550 TWS",
+                "price": 2800,
+                "platform": "Markaz",
+                "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300",
+                "sentiment_score": 0.75,
+                "sentiment_label": "Stable Interest",
+                "pos_score": 84.1,
+                "growth": "+12.2%",
+                "advice": "Safe local brand with strong warranty support.",
+                "rating": 4.5,
+                "reviews": 890
+            }
+        ]
+    },
+    {
+        "q": "gym",
+        "results": [
+            {
+                "id": "exh_gym_001",
+                "title": "Adjustable Dumbbells (Pair) - 20KG Home Gym",
+                "price": 8500,
+                "platform": "Daraz",
+                "image": "https://images.unsplash.com/photo-1583454110551-21f2fa2ec617?w=300",
+                "sentiment_score": 0.92,
+                "sentiment_label": "High Demand",
+                "pos_score": 88.5,
+                "growth": "+35.2%",
+                "advice": "Huge seasonal spike in home workout equipment.",
+                "rating": 4.9,
+                "reviews": 156
+            },
+            {
+                "id": "exh_gym_002",
+                "title": "Compression Gym T-Shirt (Moisture Wick)",
+                "price": 1200,
+                "platform": "Markaz",
+                "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300",
+                "sentiment_score": 0.81,
+                "sentiment_label": "High Demand",
+                "pos_score": 79.2,
+                "growth": "+18.4%",
+                "advice": "Low sourcing cost, high markup potential on social media.",
+                "rating": 4.3,
+                "reviews": 420
+            }
+        ]
+    },
+    {
+        "q": "smart watch",
+        "results": [
+            {
+                "id": "exh_sw_001",
+                "title": "T800 Ultra Smartwatch (Big Display)",
+                "price": 2200,
+                "platform": "Daraz",
+                "image": "https://images.unsplash.com/photo-1544117518-30dd0ca1a104?w=300",
+                "sentiment_score": 0.95,
+                "sentiment_label": "High Demand",
+                "pos_score": 96.2,
+                "growth": "+42.5%",
+                "advice": "The #1 trending item in Pakistan's tech category currently.",
+                "rating": 4.7,
+                "reviews": 3500
+            }
+        ]
+    },
+    {
+        "q": "gaming mouse",
+        "results": [
+            {
+                "id": "exh_gm_001",
+                "title": "Logitech G102 Lightsync Gaming Mouse",
+                "price": 4500,
+                "platform": "Daraz",
+                "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300",
+                "sentiment_score": 0.89,
+                "sentiment_label": "Stable Interest",
+                "pos_score": 82.1,
+                "growth": "+15.2%",
+                "advice": "Best-seller in gaming niche with high brand recognition.",
+                "rating": 4.8,
+                "reviews": 2100
+            }
+        ]
+    }
+]
