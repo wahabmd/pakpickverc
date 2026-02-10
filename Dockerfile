@@ -1,24 +1,32 @@
-# Use official Playwright image as base (contains necessary drivers)
-FROM mcr.microsoft.com/playwright/python:v1.45.0-jammy
+FROM python:3.10
 
-# Set working directory
+# Set user to avoid permission issues
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
+
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY backend/requirements.txt .
+# Install playwright system dependencies (requires root)
+USER root
+RUN apt-get update && apt-get install -y \
+    libgbm-dev \
+    libnss3 \
+    libasound2 \
+    libxss1 \
+    libxtst6 \
+    libgtk-3-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+USER user
+COPY --chown=user backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install Playwright browsers (already in base, but ensure they are linked for python)
 RUN playwright install chromium
 
-# Copy the rest of the application
-COPY . .
+COPY --chown=user . .
 
-# Set environment variables
 ENV PYTHONPATH=/app
 ENV PORT=7860
 
-# Command to run the application
+# FastAPI app run command
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "7860"]

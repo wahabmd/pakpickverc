@@ -311,6 +311,7 @@ async def search(q: str = FastAPIQuery(..., description="Search keyword")):
     return {"query": q, "results": processed, "source": source_label, "competition_score": MLEngine.calculate_competition_score(processed)}
 
 @app.get("/analytics/keywords")
+async def get_trending_keywords():
     """
     Returns trending keywords based on actual user searches stored in cache.
     """
