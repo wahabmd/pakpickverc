@@ -218,19 +218,9 @@ const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibiti
                             Clear
                         </button>
                     </div>
-                </div>
             )}
-            <button
-                onClick={() => setSelectedIds(new Set())}
-                className="text-blue-100 hover:text-white transition"
-            >
-                Clear
-            </button>
-        </div>
-    )
-}
-        </div >
-    );
+                </div>
+            );
 };
 
-export default ProductTable;
+            export default ProductTable;
