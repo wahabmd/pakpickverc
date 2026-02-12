@@ -6,10 +6,12 @@ import ProductTable from './components/ProductTable';
 import SurveyFlow from './components/SurveyFlow';
 import ProductDetail from './components/ProductDetail';
 import ComparisonView from './components/ComparisonView';
+import ConnectShopModal from './components/ConnectShopModal';
+import SellerDashboard from './components/SellerDashboard';
 import { api } from './services/api';
 
 // Types
-type ViewState = 'landing' | 'keyword' | 'survey' | 'results' | 'detail' | 'comparison' | 'trends';
+type ViewState = 'landing' | 'keyword' | 'survey' | 'results' | 'detail' | 'comparison' | 'trends' | 'seller_dashboard';
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -24,6 +26,10 @@ function App() {
   const [isExhibition, setIsExhibition] = useState(false);
   const [marketStats, setMarketStats] = useState<any>(null);
   const [trendingKeywords, setTrendingKeywords] = useState<any[]>([]);
+
+  // Shop Connection State
+  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
+  const [connectedShopData, setConnectedShopData] = useState<any>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -272,12 +278,25 @@ function App() {
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
-            <button className="btn-primary text-sm py-2 px-4">
-              Connect Shop
+            <button
+              onClick={() => connectedShopData ? setView('seller_dashboard') : setIsShopModalOpen(true)}
+              className={`${connectedShopData ? 'bg-green-600 hover:bg-green-500' : 'btn-primary'} text-xs py-2 px-4 rounded-xl transition-all shadow-lg flex items-center space-x-2`}
+            >
+              <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>{connectedShopData ? 'Shop Intelligence' : 'Connect Shop'}</span>
             </button>
           </div>
         </div>
       </nav>
+
+      <ConnectShopModal
+        isOpen={isShopModalOpen}
+        onClose={() => setIsShopModalOpen(false)}
+        onConnect={(data) => {
+          setConnectedShopData(data);
+          setView('seller_dashboard');
+        }}
+      />
 
       <main className="pb-20 flex-1">
         <AnimatePresence mode="wait">
@@ -364,6 +383,18 @@ function App() {
                 products={selectedCompareProducts}
                 onBack={() => setView('results')}
               />
+            </motion.div>
+          )}
+          {view === 'seller_dashboard' && connectedShopData && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="max-w-7xl mx-auto px-4 pt-12 pb-20"
+            >
+              <button onClick={() => setView('landing')} className="mb-8 text-slate-400 hover:text-white flex items-center">
+                <ChevronLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+              </button>
+              <SellerDashboard shopData={connectedShopData} />
             </motion.div>
           )}
           {view === 'trends' && (
