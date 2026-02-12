@@ -97,42 +97,44 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId }) => {
                 analysis={analysis}
             />
 
-            {/* Header Info */}
-            <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-full md:w-1/3">
+// Header Info
+            <div className="flex flex-col lg:flex-row gap-8">
+                <div className="w-full lg:w-1/3">
                     <img
                         src={product.image}
-                        className="w-full aspect-square rounded-3xl object-cover glass-card"
+                        className="w-full aspect-square rounded-3xl object-cover glass-card shadow-lg"
                         alt="Product"
                     />
                 </div>
                 <div className="flex-1 space-y-6">
                     <div>
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                             <div className="flex items-center space-x-2">
-                                <span className="bg-blue-500/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Top Seller</span>
-                                <span className="bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">High Margin</span>
+                                <span className="bg-blue-500/20 text-blue-400 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Top Seller</span>
+                                <span className="bg-green-500/20 text-green-400 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">High Margin</span>
                             </div>
-                            <button
-                                onClick={() => setShowReport(true)}
-                                className="bg-white text-slate-900 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center transition shadow-lg"
-                            >
-                                <Globe className="w-3 h-3 mr-2" /> Generate Business Case
-                            </button>
-                            {product.link && (
+                            <div className="flex flex-wrap gap-2 w-full md:w-auto mt-2 md:mt-0">
                                 <button
-                                    onClick={() => window.open(product.link, '_blank')}
-                                    className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center transition shadow-lg ml-2"
+                                    onClick={() => setShowReport(true)}
+                                    className="flex-1 md:flex-none justify-center bg-white text-slate-900 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center transition shadow-lg whitespace-nowrap"
                                 >
-                                    <ShoppingCart className="w-3 h-3 mr-2" /> Visit Store
+                                    <Globe className="w-3 h-3 mr-2" /> Business Case
                                 </button>
-                            )}
+                                {product.link && (
+                                    <button
+                                        onClick={() => window.open(product.link, '_blank')}
+                                        className="flex-1 md:flex-none justify-center bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center transition shadow-lg whitespace-nowrap"
+                                    >
+                                        <ShoppingCart className="w-3 h-3 mr-2" /> Visit Store
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                        <h1 className="text-4xl font-extrabold mb-2 title-gradient transition-colors">{product.title}</h1>
-                        <p className="text-slate-500 dark:text-slate-300 text-lg transition-colors">Market potential and demand analysis</p>
+                        <h1 className="text-3xl md:text-4xl font-extrabold mb-2 title-gradient transition-colors leading-tight">{product.title}</h1>
+                        <p className="text-slate-500 dark:text-slate-300 text-base md:text-lg transition-colors">Market potential and demand analysis</p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <div className="glass-card p-4">
                             <div className="text-slate-500 text-xs font-bold uppercase mb-1 flex items-center">
                                 <ShoppingCart className="w-3 h-3 mr-1" /> Est. Monthly Sales

@@ -109,14 +109,14 @@ const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibiti
                                 )}
                             </div>
 
-                            <div className="flex-1 flex items-center space-x-6">
+                            <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 w-full">
                                 <img
                                     src={product.image}
                                     alt={product.title}
-                                    className="w-24 h-24 rounded-xl object-cover"
+                                    className="w-full sm:w-24 h-48 sm:h-24 rounded-xl object-cover"
                                 />
-                                <div className="max-w-md">
-                                    <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-full sm:max-w-md">
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
                                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${product.platform === 'Daraz' ? 'bg-orange-500/20 text-orange-400' :
                                             product.platform === 'AI Forecast' ? 'bg-purple-500/20 text-purple-400' :
                                                 'bg-green-500/20 text-green-400'
@@ -126,29 +126,31 @@ const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibiti
                                         {product.is_prediction && (
                                             <span className="bg-purple-500/10 text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded border border-purple-500/20 uppercase tracking-tighter">AI Prediction</span>
                                         )}
-                                        <span className="text-slate-500 text-[10px] font-mono">ID: {String(product?._id || product?.id || 'N/A').substring(0, 6)}...</span>
+                                        <span className="text-slate-500 text-[10px] font-mono ml-auto sm:ml-0">ID: {String(product?._id || product?.id || 'N/A').substring(0, 6)}...</span>
                                     </div>
                                     <h3 className="text-lg font-bold group-hover:text-blue-400 transition-colors line-clamp-1">{product.title}</h3>
-                                    <div className="flex items-center space-x-4 mt-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
                                         <div className="text-xl font-extrabold text-[#0f172a] dark:text-white">PKR {product.price}</div>
-                                        {product.pos_score && (
-                                            <div className="flex items-center space-x-1">
-                                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Competition:</span>
-                                                <span className={`text-sm font-bold ${product.competition_score > 70 ? 'text-green-400' : product.competition_score > 40 ? 'text-yellow-400' : 'text-red-400'}`}>{product.competition_score || 'N/A'}%</span>
-                                            </div>
-                                        )}
-                                        {product.profit_estimate && (
-                                            <div className="flex items-center space-x-1">
-                                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Profit Margin:</span>
-                                                <span className="text-sm font-bold text-green-400">{product.profit_estimate.margin}</span>
-                                            </div>
-                                        )}
-                                        {product.reviews !== undefined && (
-                                            <div className="flex items-center space-x-1 border-l border-slate-700 pl-4 ml-4">
-                                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Reviews:</span>
-                                                <span className="text-sm font-bold text-blue-400">{product.reviews}</span>
-                                            </div>
-                                        )}
+                                        <div className="flex flex-wrap gap-x-4 gap-y-1">
+                                            {product.pos_score && (
+                                                <div className="flex items-center space-x-1">
+                                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Comp:</span>
+                                                    <span className={`text-sm font-bold ${product.competition_score > 70 ? 'text-green-400' : product.competition_score > 40 ? 'text-yellow-400' : 'text-red-400'}`}>{product.competition_score || 'N/A'}%</span>
+                                                </div>
+                                            )}
+                                            {product.profit_estimate && (
+                                                <div className="flex items-center space-x-1">
+                                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Margin:</span>
+                                                    <span className="text-sm font-bold text-green-400">{product.profit_estimate.margin}</span>
+                                                </div>
+                                            )}
+                                            {product.reviews !== undefined && (
+                                                <div className="flex items-center space-x-1 sm:border-l border-slate-700 sm:pl-4">
+                                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Rev:</span>
+                                                    <span className="text-sm font-bold text-blue-400">{product.reviews}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -198,25 +200,36 @@ const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibiti
 
             {/* Floating Compare Bar */}
             {selectedIds.size > 0 && (
-                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-blue-600 px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-8 animate-in slide-in-from-bottom-10">
-                    <div className="text-white">
-                        <span className="font-bold">{selectedIds.size}</span> Products Ready for Comparison
+                <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-auto bg-blue-600 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row items-center justify-between md:justify-center md:space-x-8 gap-3 md:gap-0 animate-in slide-in-from-bottom-10 backdrop-blur-sm bg-opacity-95">
+                    <div className="text-white text-sm md:text-base text-center md:text-left">
+                        <span className="font-bold">{selectedIds.size}</span> Products Selected
                     </div>
-                    <button
-                        onClick={handleCompare}
-                        className="bg-white text-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-slate-100 transition shadow-lg"
-                    >
-                        Compare Platform Data
-                    </button>
-                    <button
-                        onClick={() => setSelectedIds(new Set())}
-                        className="text-blue-100 hover:text-white transition"
-                    >
-                        Clear
-                    </button>
+                    <div className="flex w-full md:w-auto gap-2">
+                        <button
+                            onClick={handleCompare}
+                            className="flex-1 md:flex-none bg-white text-blue-600 px-4 md:px-6 py-2 rounded-lg md:rounded-xl text-sm font-bold hover:bg-slate-100 transition shadow-lg whitespace-nowrap"
+                        >
+                            Compare
+                        </button>
+                        <button
+                            onClick={() => setSelectedIds(new Set())}
+                            className="px-3 md:px-0 text-blue-100 hover:text-white transition text-sm font-medium"
+                        >
+                            Clear
+                        </button>
+                    </div>
                 </div>
             )}
+            <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-blue-100 hover:text-white transition"
+            >
+                Clear
+            </button>
         </div>
+    )
+}
+        </div >
     );
 };
 
