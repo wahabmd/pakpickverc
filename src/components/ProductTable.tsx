@@ -218,9 +218,10 @@ const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibiti
                             Clear
                         </button>
                     </div>
-            )}
                 </div>
-            );
+            )}
+        </div>
+    );
 };
 
-            export default ProductTable;
+export default ProductTable;
