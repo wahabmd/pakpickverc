@@ -27,6 +27,7 @@ class Database:
             print(f"📡 Attempting to connect to Cloud MongoDB...")
             cls.client = motor.motor_asyncio.AsyncIOMotorClient(
                 MONGO_URI, 
+                tlsCAFile=certifi.where(),
                 serverSelectionTimeoutMS=2000, # Ultra-fast timeout (2s)
                 connectTimeoutMS=2000,
                 socketTimeoutMS=2000,
