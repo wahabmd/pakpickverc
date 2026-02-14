@@ -43,5 +43,29 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/analytics/keywords`);
     if (!response.ok) throw new Error('Failed to fetch keywords');
     return response.json();
+  },
+
+  getWatchlist: async () => {
+    const response = await fetch(`${API_BASE_URL}/watchlist`);
+    if (!response.ok) throw new Error('Failed to fetch watchlist');
+    return response.json();
+  },
+
+  addToWatchlist: async (product: any) => {
+    const response = await fetch(`${API_BASE_URL}/watchlist/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product),
+    });
+    if (!response.ok) throw new Error('Failed to add to watchlist');
+    return response.json();
+  },
+
+  removeFromWatchlist: async (productId: string | number) => {
+    const response = await fetch(`${API_BASE_URL}/watchlist/${productId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to remove from watchlist');
+    return response.json();
   }
 };

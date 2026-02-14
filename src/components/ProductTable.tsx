@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Filter, ChevronDown } from 'lucide-react';
+import { ChevronRight, Filter, ChevronDown, Heart } from 'lucide-react';
 import ProductGraph from './ProductGraph';
 
 // Mock data generator for graphs
@@ -10,12 +10,14 @@ const generateData = () => {
     }));
 };
 
-const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibition, source }: {
+const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibition, source, watchlistIds, onToggleWatch }: {
     products: any[],
     onProductSelect: (id: string | number) => void,
     onCompareSelected: (items: any[]) => void,
     isExhibition?: boolean,
-    source?: string
+    source?: string,
+    watchlistIds?: Set<string>,
+    onToggleWatch?: (product: any) => void
 }) => {
     const [range, setRange] = useState('7d');
     const [isFiltering, setIsFiltering] = useState(false);
@@ -107,6 +109,20 @@ const ProductTable = ({ products, onProductSelect, onCompareSelected, isExhibiti
                                 {selectedIds.has(String(product._id || product.id)) && (
                                     <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>
                                 )}
+                            </div>
+
+                            {/* Watchlist Toggle */}
+                            <div
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleWatch?.(product);
+                                }}
+                                className={`mr-4 p-2 rounded-full transition-all ${watchlistIds?.has(String(product._id || product.id))
+                                    ? 'bg-red-500/10 text-red-500'
+                                    : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                    }`}
+                            >
+                                <Heart className={`w-5 h-5 ${watchlistIds?.has(String(product._id || product.id)) ? 'fill-current' : ''}`} />
                             </div>
 
                             <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 w-full">

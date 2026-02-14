@@ -695,7 +695,52 @@ async def recommendations(budget: str = "medium", category: str = "electronics",
 
 @app.get("/debug")
 async def debug():
-    return {"status": "ok", "db_mode": Database.mode, "version": "2.0-Optimized"}
+    return {"status": "ok", "db_mode": Database.mode, "version": "2.1-Watchlist-Enabled"}
+
+# --- WATCHLIST ENDPOINTS ---
+
+@app.get("/watchlist")
+async def get_watchlist():
+    """Returns the user's saved watchlist."""
+    products = await Database.get_products("watchlist")
+    return {"results": products}
+
+@app.post("/watchlist/add")
+async def add_to_watchlist(product: dict):
+    """Adds a product to the persistent watchlist."""
+    if not product or "title" not in product:
+        throw_msg = "Invalid product data"
+        raise HTTPException(status_code=400, detail=throw_msg)
+    
+    # Ensure it has an ID
+    if not product.get("id") and not product.get("_id"):
+        product["id"] = f"watch_{random.randint(10000, 99999)}"
+        
+    await Database.save_product(product, "watchlist")
+    return {"status": "success", "message": f"Added {product['title']} to watchlist"}
+
+@app.delete("/watchlist/{product_id}")
+async def remove_from_watchlist(product_id: str):
+    """Removes a product from the watchlist by ID."""
+    if Database.db is not None:
+        try:
+            from bson import ObjectId
+            # Try deletion by ObjectId or ID field
+            try:
+                await Database.db["watchlist"].delete_one({"_id": ObjectId(product_id)})
+            except:
+                await Database.db["watchlist"].delete_one({"id": product_id})
+        except:
+            pass
+            
+    if Database.local_db is not None:
+        try:
+            table = Database.local_db.table("watchlist")
+            table.remove(lambda d: str(d.get("_id")) == product_id or str(d.get("id")) == product_id)
+        except:
+            pass
+            
+    return {"status": "success", "message": "Product removed from watchlist"}
 
 if __name__ == "__main__":
     import argparse

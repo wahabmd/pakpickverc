@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ClipboardList, TrendingUp, ChevronRight, ChevronLeft, Sun, Moon, RefreshCw, Database, WifiOff } from 'lucide-react';
+import { Search, ClipboardList, TrendingUp, ChevronRight, ChevronLeft, Sun, Moon, RefreshCw, Database, WifiOff, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import ProductTable from './components/ProductTable';
@@ -11,7 +11,7 @@ import SellerDashboard from './components/SellerDashboard';
 import { api } from './services/api';
 
 // Types
-type ViewState = 'landing' | 'keyword' | 'survey' | 'results' | 'detail' | 'comparison' | 'trends' | 'seller_dashboard';
+type ViewState = 'landing' | 'keyword' | 'survey' | 'results' | 'detail' | 'comparison' | 'trends' | 'seller_dashboard' | 'watchlist';
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -30,6 +30,8 @@ function App() {
   // Shop Connection State
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const [connectedShopData, setConnectedShopData] = useState<any>(null);
+  const [watchlist, setWatchlist] = useState<any[]>([]);
+  const [watchlistIds, setWatchlistIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -43,11 +45,37 @@ function App() {
 
     // Initial fetch
     fetchStats();
+    fetchWatchlist();
 
     // Poll every 5 seconds to keep connection status live
     const interval = setInterval(fetchStats, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchWatchlist = async () => {
+    try {
+      const data = await api.getWatchlist();
+      setWatchlist(data.results || []);
+      setWatchlistIds(new Set((data.results || []).map((p: any) => String(p._id || p.id))));
+    } catch (e) {
+      console.error("Watchlist fetch error:", e);
+    }
+  };
+
+  const handleToggleWatch = async (product: any) => {
+    const id = String(product._id || product.id);
+    try {
+      if (watchlistIds.has(id)) {
+        await api.removeFromWatchlist(id);
+      } else {
+        await api.addToWatchlist(product);
+      }
+      // Refresh local state
+      fetchWatchlist();
+    } catch (e) {
+      console.error("Watchlist toggle error:", e);
+    }
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -160,6 +188,11 @@ function App() {
   const handleProductSelect = (id: string | number) => {
     setSelectedProductId(id);
     setView('detail');
+  };
+
+  const handleShowWatchlist = () => {
+    fetchWatchlist();
+    setView('watchlist');
   };
 
   const renderLanding = () => (
@@ -279,11 +312,31 @@ function App() {
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
             <button
-              onClick={() => connectedShopData ? setView('seller_dashboard') : setIsShopModalOpen(true)}
-              className={`${connectedShopData ? 'bg-green-600 hover:bg-green-500' : 'btn-primary'} text-xs py-2 px-4 rounded-xl transition-all shadow-lg flex items-center space-x-2`}
+              onClick={handleShowWatchlist}
+              className={`p-2 rounded-lg transition-all flex items-center space-x-2 ${view === 'watchlist' ? 'bg-red-500/10 text-red-500' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              title="My Watchlist"
             >
-              <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>{connectedShopData ? 'Shop Intelligence' : 'Connect Shop'}</span>
+              <Heart className={`w-5 h-5 ${view === 'watchlist' ? 'fill-current' : ''}`} />
+              <span className="hidden md:inline font-bold text-xs uppercase">Watchlist</span>
+              {watchlist.length > 0 && (
+                <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                  {watchlist.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => {
+                if (connectedShopData) {
+                  setView('seller_dashboard');
+                } else {
+                  setIsShopModalOpen(true);
+                }
+              }}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600/10 border border-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-xs font-bold"
+            >
+              <Database className="w-4 h-4" />
+              <span>{connectedShopData ? "Seller Dashboard" : "Connect Shop"}</span>
             </button>
           </div>
         </div>
@@ -357,6 +410,8 @@ function App() {
                   onCompareSelected={handleCompareSelected}
                   isExhibition={isExhibition}
                   source={dataSource}
+                  watchlistIds={watchlistIds}
+                  onToggleWatch={handleToggleWatch}
                 />
               )}
             </motion.div>
@@ -514,6 +569,51 @@ function App() {
                   products={products}
                   onProductSelect={handleProductSelect}
                   onCompareSelected={handleCompareSelected}
+                  watchlistIds={watchlistIds}
+                  onToggleWatch={handleToggleWatch}
+                />
+              )}
+            </motion.div>
+          )}
+          {view === 'watchlist' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="max-w-7xl mx-auto px-4 pt-12"
+            >
+              <button
+                onClick={() => setView('landing')}
+                className="mb-8 text-slate-500 dark:text-slate-400 hover:text-[#0f172a] dark:hover:text-white flex items-center"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" /> Back to Home
+              </button>
+
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-3xl font-bold flex items-center">
+                  <Heart className="w-8 h-8 text-red-500 mr-3 fill-current" /> My Smart Watchlist
+                </h2>
+                <p className="text-slate-500 font-medium">Tracking {watchlist.length} High-Potential Products</p>
+              </div>
+
+              {watchlist.length === 0 ? (
+                <div className="text-center py-32 glass-card">
+                  <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Heart className="w-8 h-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">Watchlist is Empty</h3>
+                  <p className="text-slate-500 max-w-md mx-auto mb-8">
+                    Start following products from Search or Trends to track their performance here.
+                  </p>
+                  <button onClick={() => setView('landing')} className="btn-primary">Explore Products</button>
+                </div>
+              ) : (
+                <ProductTable
+                  products={watchlist}
+                  onProductSelect={handleProductSelect}
+                  onCompareSelected={handleCompareSelected}
+                  watchlistIds={watchlistIds}
+                  onToggleWatch={handleToggleWatch}
+                  source="Personal Watchlist"
                 />
               )}
             </motion.div>
