@@ -7,7 +7,9 @@ import {
     Info,
     DollarSign,
     Globe,
-    Truck
+    Truck,
+    FileText,
+    Download
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -25,6 +27,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId }) => {
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showReport, setShowReport] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+
+    const handleExport = async () => {
+        setIsExporting(true);
+        try {
+            // Use browser open for direct download since it's a simple GET returning a blob with attachment header
+            const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000';
+            window.open(`${API_BASE_URL}/export/strategy/${productId}`, '_blank');
+        } catch (error) {
+            console.error("Export error:", error);
+        } finally {
+            setTimeout(() => setIsExporting(false), 2000);
+        }
+    };
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -128,6 +144,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId }) => {
                                         <ShoppingCart className="w-3 h-3 mr-2" /> Visit Store
                                     </button>
                                 )}
+                                <button
+                                    onClick={handleExport}
+                                    disabled={isExporting}
+                                    className="flex-1 md:flex-none justify-center bg-slate-900 dark:bg-slate-700 text-white hover:bg-black dark:hover:bg-slate-600 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center transition shadow-lg whitespace-nowrap"
+                                >
+                                    {isExporting ? (
+                                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                    ) : (
+                                        <FileText className="w-3 h-3 mr-2" />
+                                    )}
+                                    AI Strategy (PDF)
+                                </button>
                             </div>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-extrabold mb-2 title-gradient transition-colors leading-tight">{product.title}</h1>

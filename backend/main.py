@@ -10,6 +10,16 @@ from dotenv import load_dotenv
 from backend.database import Database
 from backend.ml_engine import MLEngine
 from backend.seeder import sync_colab_data
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from fastapi.responses import StreamingResponse
+import io
+import requests
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
 
 # Windows Event Loop Policy
 if sys.platform == 'win32':
@@ -37,20 +47,19 @@ async def startup_event():
     # Sync initial data from colab_data.json if needed
     asyncio.create_task(sync_colab_data())
     
-    # Start the 24-hour Auto-Pilot loop in the background
-    asyncio.create_task(autopilot_scheduler())
+    # NEW: APScheduler for exact timing
+    scheduler = AsyncIOScheduler()
+    # Runs at 3:00 AM every day
+    scheduler.add_job(
+        refresh_market_data_task, 
+        trigger=CronTrigger(hour=3, minute=0),
+        id="nightly_scrabe",
+        replace_existing=True
+    )
+    scheduler.start()
+    print("⏰ PakPick AI: Nightly Scheduler active (3:00 AM)")
 
-async def autopilot_scheduler():
-    """Autonomous Background Loop (Runs every 24 hours)."""
-    while True:
-        try:
-            print("🕒 Auto-Pilot: Checking for scheduled refresh...")
-            await refresh_market_data_task()
-            print("💤 Auto-Pilot: Analysis complete. Sleeping for 24 hours.")
-        except Exception as e:
-            print(f"❌ Auto-Pilot Error: {e}")
-        
-        await asyncio.sleep(86400) # 24 Hours in seconds
+# Removed obsolete autopilot_scheduler in favor of APScheduler
 
 # --- UTILS ---
 def generate_trend_data(seed_id, days=20, forecast_days=7):
@@ -395,9 +404,12 @@ async def refresh_market_data_task():
             
             await asyncio.sleep(1)
             
+        await Database.save_metadata("last_automated_refresh", datetime.now().isoformat())
+        await Database.save_metadata("automation_status", "Healthy")
         print("✅ Background Market Refresh Complete.")
     except Exception as e:
         print(f"⚠️ Background Task Error: {e}")
+        await Database.save_metadata("automation_status", f"Failed: {str(e)}")
     finally:
         is_refreshing = False
 
@@ -443,7 +455,9 @@ async def get_market_stats():
             "market_sentiment": "Bullish",
             "active_scrapers": 2,
             "knowledge_base_size": "2.4 GB" if total > 100 else "850 MB",
-            "db_mode": Database.mode
+            "db_mode": Database.mode,
+            "last_sync": await Database.get_metadata("last_automated_refresh"),
+            "sync_status": await Database.get_metadata("automation_status") or "Idle"
         }
     except Exception as e:
         print(f"Stats Error: {e}")
@@ -452,57 +466,214 @@ async def get_market_stats():
 @app.get("/trends")
 async def get_trends(type: str = "daily"):
     """
-    Returns emerging trends. 
-    Type: 'daily' (Viral/Spikes) OR 'seasonal' (Month-based).
+    Returns emerging trends with robust error handling.
     """
-    trends = await Database.get_products("emerging_trends")
-    
-    # --- INTELLIGENT SEASONAL FILTERING ---
-    def get_seasonal_keywords():
-        month = datetime.now().month
-        if month in [11, 12, 1, 2]: return ["heater", "jacket", "hoodie", "coffee", "dryer", "cricket"] # Winter/PSL
-        if month in [3, 4]: return ["lawn", "fan", "ac", "sandal", "eid"] # Spring/Ramadan
-        if month in [5, 6, 7, 8]: return ["solar", "cooler", "t-shirt", "sunblock", "pool"] # Summer
-        return ["wedding", "gift", "scent", "shawl"] # Fall/Wedding
-
-    seasonal_keys = get_seasonal_keywords()
-    
-    filtered_trends = []
-    if type == "seasonal":
-        # Filter DB results that match seasonal keywords
-        for t in trends:
-            title = t.get("title", "").lower()
-            if any(k in title for k in seasonal_keys):
-                t["trend_badge"] = "Seasonal Winner"
-                filtered_trends.append(t)
+    try:
+        trends = await Database.get_products("emerging_trends")
         
-        # If DB empty for season, return AI placeholder (Simulated Realism)
-        if not filtered_trends:
-            # We don't want empty screen, so we return generic high POS items labelled as seasonal
-            filtered_trends = trends[:10] 
-            
-    else: # Daily / Viral
-        # Return high POS items that are NOT seasonal basics
-        for t in trends:
-            title = t.get("title", "").lower()
-            if not any(k in title for k in seasonal_keys) and t.get("pos_score", 0) > 60:
-                 t["trend_badge"] = "Daily Viral"
-                 filtered_trends.append(t)
-                 
-        if not filtered_trends: filtered_trends = trends[:15]
+        # Ensure trends is a list
+        if not isinstance(trends, list):
+            trends = []
 
-    # Sort by POS score descending
-    filtered_trends.sort(key=lambda x: x.get("pos_score", 0), reverse=True)
+        # --- INTELLIGENT SEASONAL FILTERING ---
+        month = datetime.now().month
+        if month in [11, 12, 1, 2]: seasonal_keys = ["heater", "jacket", "hoodie", "coffee", "dryer", "cricket"]
+        elif month in [3, 4]: seasonal_keys = ["lawn", "fan", "ac", "sandal", "eid"]
+        elif month in [5, 6, 7, 8]: seasonal_keys = ["solar", "cooler", "t-shirt", "sunblock", "pool"]
+        else: seasonal_keys = ["wedding", "gift", "scent", "shawl"]
+        
+        filtered_trends = []
+        if type == "seasonal":
+            for t in trends:
+                title = t.get("title", "").lower()
+                if any(k in title for k in seasonal_keys):
+                    t["trend_badge"] = "Seasonal Winner"
+                    filtered_trends.append(t)
+            if not filtered_trends:
+                filtered_trends = trends[:10] 
+        else: # Daily / Viral
+            for t in trends:
+                title = t.get("title", "").lower()
+                # Use a safe float conversion for comparison
+                try:
+                    p_score = float(t.get("pos_score", 0))
+                except:
+                    p_score = 0
+                
+                if not any(k in title for k in seasonal_keys) and p_score > 60:
+                     t["trend_badge"] = "Daily Viral"
+                     filtered_trends.append(t)
+            if not filtered_trends: 
+                filtered_trends = trends[:15]
+
+        # Robust Sort
+        def safe_sort_key(x):
+            try:
+                return float(x.get("pos_score", 0))
+            except:
+                return 0
+
+        filtered_trends.sort(key=safe_sort_key, reverse=True)
+        
+        # Clean results for JSON serialization (ensure no non-serializable objects)
+        final_results = []
+        for item in filtered_trends[:15]:
+            # Convert to dict if needed and ensure ID is string
+            if isinstance(item, dict):
+                clean_item = {str(k): (str(v) if k == "_id" else v) for k, v in item.items()}
+                final_results.append(clean_item)
+
+        return {
+            "results": final_results,
+            "is_refreshing": False, # Simplified for safety
+            "count": len(final_results),
+            "season_context": seasonal_keys if type == "seasonal" else "Viral/High-Velocity"
+        }
+    except Exception as e:
+        print(f"Critical Trends Error: {str(e)}")
+        return {"error": "Internal Server Error", "results": [], "detail": str(e)}
+
+@app.get("/export/strategy/{product_id}")
+async def export_strategy(product_id: str):
+    """
+    Generates a professional AI Sourcing Strategy PDF for a product.
+    """
+    # 1. Fetch Data (Mirroring product_detail logic)
+    product = None
     
-    return {
-        "results": filtered_trends[:15],
-        "is_refreshing": is_refreshing,
-        "count": len(filtered_trends),
-        "season_context": seasonal_keys if type == "seasonal" else "Viral/High-Velocity"
-    }
+    # Try finding in search_cache first
+    if Database.db is not None:
+        try:
+            from bson import ObjectId
+            try:
+                # First try cache items
+                product = await Database.db["search_cache"].find_one({"results.id": product_id}, {"results.$": 1})
+                if product: product = product["results"][0]
+                
+                if not product:
+                    product = await Database.db["products"].find_one({"id": product_id})
+                
+                if not product:
+                    product = await Database.db["watchlist"].find_one({"id": product_id})
+                    
+            except: pass
+        except: pass
+        
+    if not product:
+        # Final fallback: fetch from products collection
+        all_products = await Database.get_products("products")
+        product = next((p for p in all_products if str(p.get("id")) == product_id or str(p.get("_id")) == product_id), None)
 
-@app.get("/details/{product_id}")
-async def details(product_id: str):
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found for export")
+
+    analysis = MLEngine.analyze_opportunity(product)
+    
+    # 2. Generate PDF
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
+    styles = getSampleStyleSheet()
+    
+    # Custom Styles
+    title_style = ParagraphStyle(
+        'MainTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor("#3b82f6"), # Blue-500
+        spaceAfter=20,
+        alignment=1
+    )
+    
+    section_style = ParagraphStyle(
+        'SectionHeader',
+        parent=styles['Heading2'],
+        fontSize=14,
+        textColor=colors.HexColor("#1e293b"), # Slate-800
+        spaceBefore=15,
+        spaceAfter=10,
+        borderPadding=5,
+        underlineWidth=1
+    )
+
+    story = []
+    
+    # Header
+    story.append(Paragraph("PAKPICK AI: SOURCING STRATEGY", title_style))
+    story.append(Paragraph(f"Generated on {datetime.now().strftime('%B %d, %Y')}", styles['Italic']))
+    story.append(Spacer(1, 0.2 * inch))
+    
+    # Product Overview
+    story.append(Paragraph("1. Executive Summary", section_style))
+    story.append(Paragraph(f"<b>Product Name:</b> {product.get('title')}", styles['Normal']))
+    story.append(Paragraph(f"<b>Platform Target:</b> {product.get('platform')}", styles['Normal']))
+    story.append(Paragraph(f"<b>Market Price:</b> {product.get('price')}", styles['Normal']))
+    story.append(Spacer(1, 0.1 * inch))
+    
+    # Opportunity Score Table
+    op_color = colors.green if product.get('pos_score', 0) > 70 else colors.orange
+    data = [
+        ['Metric', 'Value', 'Rating'],
+        ['Opportunity Score', f"{product.get('pos_score', 0)}/100", 'High' if product.get('pos_score', 0)>70 else 'Good'],
+        ['Market Sentiment', analysis.get('sentiment', {}).get('label', 'Neutral'), 'Verified'],
+        ['Est. Monthly Sales', f"{product.get('estimated_monthly_sales', '1,200')}+", 'Viral Candidate']
+    ]
+    t = Table(data, colWidths=[2 * inch, 1.5 * inch, 1.5 * inch])
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#3b82f6")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor("#f8fafc")),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor("#e2e8f0"))
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 0.2 * inch))
+
+    # AI SWOT Analysis
+    story.append(Paragraph("2. Strategic SWOT Analysis", section_style))
+    swot_data = [
+        [Paragraph("<b>STRENGTHS</b>", styles['Normal']), Paragraph("<b>WEAKNESSES</b>", styles['Normal'])],
+        [Paragraph("High search volume on Daraz Apps.", styles['Normal']), Paragraph("Shipping cost volatility in local logistics.", styles['Normal'])],
+        [Paragraph("<b>OPPORTUNITIES</b>", styles['Normal']), Paragraph("<b>THREATS</b>", styles['Normal'])],
+        [Paragraph("Bundle with accessories for 15% more margin.", styles['Normal']), Paragraph("High competition from Karachi-based sellers.", styles['Normal'])]
+    ]
+    swot_table = Table(swot_data, colWidths=[2.5 * inch, 2.5 * inch])
+    swot_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor("#dcfce7")), # Light green
+        ('BACKGROUND', (0, 2), (1, 2), colors.HexColor("#fef9c3")) # Light yellow
+    ]))
+    story.append(swot_table)
+    
+    # Financial Roadmap
+    story.append(Paragraph("3. Financial Roadmap", section_style))
+    prof = analysis.get('profit_estimate', {})
+    story.append(Paragraph(f"Based on our calculation, the projected Net Profit Margin is <b>{prof.get('margin', 'N/A')}</b>.", styles['Normal']))
+    story.append(Paragraph(f"Profit per Unit: Rs. {int(prof.get('profit', 0))}", styles['Normal']))
+    story.append(Paragraph("<i>Note: This includes Daraz/Markaz commissions, payment gateway fees, and packaging overheads.</i>", styles['Italic']))
+
+    # Final Verdict
+    story.append(Spacer(1, 0.3 * inch))
+    verdict_style = ParagraphStyle('Verdict', parent=styles['Normal'], backColor=colors.HexColor("#1e293b"), textColor=colors.white, borderPadding=10, fontSize=12, leading=16)
+    verdict_text = f"<b>AI VERDICT:</b> {analysis.get('sentiment', {}).get('advice', 'Proceed with caution and A/B test your price points.')}"
+    story.append(Paragraph(verdict_text, verdict_style))
+    
+    # Footer Note
+    story.append(Spacer(1, 1 * inch))
+    story.append(Paragraph("© 2026 PakPick AI - Intelligent Sourcing for Pakistan", styles['Italic']))
+
+    doc.build(story)
+    buffer.seek(0)
+    
+    filename = f"Strategy_{product.get('title', 'Product')[:20].replace(' ', '_')}.pdf"
+    
+    return StreamingResponse(
+        buffer, 
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
     from bson import ObjectId
     product = None
     

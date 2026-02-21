@@ -2,6 +2,7 @@ import motor.motor_asyncio
 import os
 import json
 import certifi
+from datetime import datetime
 from tinydb import TinyDB, Query
 from dotenv import load_dotenv
 
@@ -96,16 +97,48 @@ class Database:
             except: pass
 
     @classmethod
-    async def get_products(cls, collecton_name="products"):
+    async def get_products(cls, collection_name="products"):
         """Fetches products from either Cloud or Local."""
         if cls.db is not None:
             try:
-                cursor = cls.db[collecton_name].find({})
-                return await cursor.to_list(length=1000)
-            except:
+                cursor = cls.db[collection_name].find({})
+                results = await cursor.to_list(length=1000)
+                # Convert ObjectId to string for JSON serialization
+                processed = []
+                for item in results:
+                    if item and isinstance(item, dict):
+                        if "_id" in item:
+                            item["_id"] = str(item["_id"])
+                        processed.append(item)
+                return processed
+            except Exception as e:
+                print(f"Cloud fetch error for {collection_name}: {e}")
                 pass
         
         if cls.local_db is not None:
-            return cls.local_db.table(collecton_name).all()
+            try:
+                return cls.local_db.table(collection_name).all()
+            except:
+                return []
             
-        return []
+    @classmethod
+    async def save_metadata(cls, key, value):
+        """Saves a system-level metadata entry."""
+        data = {"key": key, "value": value, "updated_at": datetime.now().isoformat()}
+        if cls.db is not None:
+            await cls.db["system_metadata"].update_one({"key": key}, {"$set": data}, upsert=True)
+        if cls.local_db is not None:
+            table = cls.local_db.table("system_metadata")
+            table.upsert(data, Query().key == key)
+
+    @classmethod
+    async def get_metadata(cls, key):
+        """Retrieves a system-level metadata entry."""
+        if cls.db is not None:
+            doc = await cls.db["system_metadata"].find_one({"key": key})
+            if doc: return doc.get("value")
+        if cls.local_db is not None:
+            table = cls.local_db.table("system_metadata")
+            res = table.get(Query().key == key)
+            if res: return res.get("value")
+        return None

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ClipboardList, TrendingUp, ChevronRight, ChevronLeft, Sun, Moon, RefreshCw, Database, WifiOff, Heart } from 'lucide-react';
+import { Search, ClipboardList, TrendingUp, ChevronRight, ChevronLeft, Sun, Moon, RefreshCw, Database, WifiOff, Heart, Clock, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import ProductTable from './components/ProductTable';
@@ -32,6 +32,14 @@ function App() {
   const [connectedShopData, setConnectedShopData] = useState<any>(null);
   const [watchlist, setWatchlist] = useState<any[]>([]);
   const [watchlistIds, setWatchlistIds] = useState<Set<string>>(new Set());
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePos({
+      x: (e.clientX / window.innerWidth - 0.5) * 20,
+      y: (e.clientY / window.innerHeight - 0.5) * 20,
+    });
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -197,88 +205,116 @@ function App() {
 
   const renderLanding = () => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-6xl mx-auto px-4 pt-20 pb-12"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onMouseMove={handleMouseMove}
+      className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 overflow-hidden"
     >
-      <div className="text-center mb-16">
+      {/* 1. Background Visuals (Mesh & Map) */}
+      <div className="mesh-gradient">
+        <div className="mesh-blob w-[600px] h-[600px] bg-blue-600/20 -top-20 -left-20 animate-blob-move" />
+        <div className="mesh-blob w-[500px] h-[500px] bg-purple-600/10 top-1/2 -right-20 animate-blob-move [animation-delay:2s]" />
+      </div>
+
+      <motion.div
+        animate={{ x: mousePos.x, y: mousePos.y }}
+        transition={{ type: 'spring', damping: 30, stiffness: 100 }}
+        className="absolute inset-0 flex items-center justify-center opacity-40 pointer-events-none pak-map-container"
+      >
+        <svg viewBox="280 340 120 160" className="w-[600px] md:w-[800px] pak-map-svg">
+          <path
+            className="pak-map-path"
+            d="M339.7,351.4l-1.5,0.4l-3,4.4l-4,0.4l-0.7,0.7l1.5,5.2l-0.4,1.9l-2.6,3.3l-5.6,4.4l-2.6-0.4l-1.5,0.7l0,3l-3.3,4.1l-3.3,1.9l-5.2-1.5l-6.3-4.8l-1.5,1.1l-0.7,5.9l1.1,5.2l4.1,2.6l4.4,0.7l5.2-0.4l0.4,1.1l-0.4,11.1l-6.3,9.3l-5.6,0.7l-4.1,3.3l-1.5,3.7l0,4.4l3.3,3.7l5.2,1.5l3.3-1.1l1.1,1.5l-0.4,6.7l2.2,2.2l-0.4,3.7l-3.7,1.5l-2.6,4.4l-0.7,5.6l2.2,4.8l-0.7,4.4l2.6,1.5l0.4,2.2l-1.1,4.1l-3.7,3.3l-0.7,5.9l8.2,12.6l1.9-0.4l7,6.3l2.6-1.1l3,1.9l4.1-1.1l1.1,1.9l10,2.6l3.3,3.3l4.8-1.9l5.9,4.1l11.1-12.2l2.6,1.5l5.2-4.1l6.7,3.3l0.7,2.2l12.2-7.8l5.2-1.1l4.1,3.3h5.9l2.2-4.1l1.5,0.4l5.6-2.6l1.5,3.3l11.5-3.3l0.4-3.3l5.6-1.5l3.7,1.5l5.2-1.5l-0.7-3l2.2-0.7l3.3,1.1l4.1-4.1l-0.4-3.7l4.4-4.8l-0.7-3.7l1.5-0.7l-1.1-5.6l3-1.5l-1.5-6.7l-4.1-3l-0.4-1.9l1.9-3.3l4.4-1.1l-0.7-5.9l1.5-0.4l0-3.3l4.1-1.1l5.2,5.2l2.6-11.5l-0.7-4.4l3.7-10.4l1.1-12.2l4.8-10l12.6-9.6l3.7-5.6V354l-5.6-7.8l-1.9,1.1l-10-8.9l-4.8-8.2l-7.4-4.8l-6.7-1.1l-7.4,1.5L339.7,351.4z"
+          />
+        </svg>
+      </motion.div>
+
+      {/* 2. Hero Content */}
+      <div className="relative z-10 text-center max-w-4xl pt-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5 mb-8 backdrop-blur-md"
+        >
+          <div className="pulse-scan" />
+          <span className="text-blue-400 text-[10px] md:text-xs font-bold uppercase tracking-widest">Live Market Intelligence 2.0</span>
+        </motion.div>
+
         <motion.h1
-          className="text-6xl font-extrabold mb-6 title-gradient"
+          className="text-5xl md:text-7xl font-black mb-6 leading-tight"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <span className="title-gradient">Hunt the Next</span>
+          <br />
+          <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">Winning Product</span>
+        </motion.h1>
+
+        <motion.p
+          className="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
         >
-          Hunt Your Next Winner
-        </motion.h1>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-          The ultimate product research tool for Pakistani e-commerce sellers.
-          Find high-demand products on Daraz & Markaz in seconds.
-        </p>
+          PakPick AI analyzes millions of data points across Daraz and Markaz to reveal
+          the highest-margin opportunities for Pakistani sellers.
+        </motion.p>
+
+        {/* 3. Action Grid */}
+        <div className="grid md:grid-cols-2 gap-8 mb-20 w-full">
+          <motion.div
+            whileHover={{ scale: 1.05, rotateY: 5 }}
+            whileTap={{ scale: 0.98 }}
+            className="glass-card-premium p-8 cursor-pointer group rounded-3xl"
+            onClick={() => setView('keyword')}
+          >
+            <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/30 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
+              <Search className="w-8 h-8" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4 tracking-tight">Keyword Ingestion</h3>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              Deep-scrape specific niches to reveal hidden competitors and price gaps.
+            </p>
+            <div className="flex items-center text-blue-400 font-bold group-hover:translate-x-2 transition-transform">
+              Ingest Marketplace <ChevronRight className="ml-2 w-4 h-4" />
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.05, rotateY: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="glass-card-premium p-8 cursor-pointer group rounded-3xl border-purple-500/30"
+            onClick={() => setView('survey')}
+          >
+            <div className="absolute top-4 right-4 bg-purple-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-purple-600/40">
+              Pro Choice
+            </div>
+            <div className="w-16 h-16 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/30 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
+              <ClipboardList className="w-8 h-8" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4 tracking-tight">Smart Discovery</h3>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              AI-driven survey to match products with your specific budget and scale.
+            </p>
+            <div className="flex items-center text-purple-400 font-bold group-hover:translate-x-2 transition-transform">
+              Launch AI Survey <ChevronRight className="ml-2 w-4 h-4" />
+            </div>
+          </motion.div>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 mt-12">
-        {/* Keyword Option */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="glass-card p-8 cursor-pointer group"
-          onClick={() => setView('keyword')}
-        >
-          <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/30 transition-colors">
-            <Search className="text-blue-400 w-8 h-8" />
-          </div>
-          <h3 className="text-2xl font-bold mb-4">Search by Keyword</h3>
-          <p className="text-slate-400 mb-6">
-            Already have an idea? Enter a keyword to see real-time market data,
-            competitor analysis, and sales trends.
-          </p>
-          <div className="flex items-center text-blue-400 font-semibold">
-            Get Started <ChevronRight className="ml-2 w-4 h-4" />
-          </div>
-        </motion.div>
-
-        {/* Survey Option */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="glass-card p-8 cursor-pointer group relative overflow-hidden"
-          onClick={() => setView('survey')}
-        >
-          <div className="absolute top-4 right-4 bg-blue-500 text-xs font-bold px-3 py-1 rounded-full">
-            RECOMMENDED
-          </div>
-          <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition-colors">
-            <ClipboardList className="text-purple-400 w-8 h-8" />
-          </div>
-          <h3 className="text-2xl font-bold mb-4">Smart Product Survey</h3>
-          <p className="text-slate-400 mb-6">
-            Not sure what to sell? Answer a few questions about your budget and
-            interests, and we'll find the best opportunities for you.
-          </p>
-          <div className="flex items-center text-purple-400 font-semibold">
-            Start Survey <ChevronRight className="ml-2 w-4 h-4" />
-          </div>
-        </motion.div>
-      </div>
-
-      <div className="mt-24 border-t border-slate-200 dark:border-slate-800 pt-12">
-        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest text-center mb-12">Aaj ki Market Update (Daily Insights)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="glass-card p-6 text-center">
-            <div className="text-3xl font-black text-blue-400 mb-1">{marketStats?.total_products || '1,240'}+</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Kul Bazar Items (Scanned)</div>
-          </div>
-          <div className="glass-card p-6 text-center border-green-500/20">
-            <div className="text-3xl font-black text-green-400 mb-1">{marketStats?.top_roi || '42%'}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Sab se Zyada Munafa (Top ROI)</div>
-          </div>
-          <div className="glass-card p-6 text-center border-purple-500/20">
-            <div className="text-3xl font-black text-purple-400 mb-1">{marketStats?.avg_opportunity_score || '82.5'}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Kamyabi ka Chance (Success Rate)</div>
-          </div>
-          <div className="glass-card p-6 text-center border-orange-500/20">
-            <div className="text-2xl font-black text-orange-400 mb-1 uppercase">{marketStats?.market_sentiment === 'Bullish' ? 'Dhoom (High)' : 'Stable'}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Logon ka Mood (Buying Mode)</div>
-          </div>
+      {/* 4. Market Pulse Ticker (Infinite Scroll) */}
+      <div className="absolute bottom-0 w-full ticker-wrap">
+        <div className="ticker">
+          {[...Array(20)].map((_, i) => (
+            <div key={i} className="ticker-item flex items-center">
+              <TrendingUp className="w-3 h-3 mr-2 text-green-500" />
+              <span>{trendingKeywords[i % (trendingKeywords.length || 1)]?.keyword || "ELECTRONICS"}</span>
+              <span className="ml-2 text-green-400 font-bold">+{Math.floor(Math.random() * 50)}%</span>
+              <span className="mx-6 text-slate-700">|</span>
+            </div>
+          ))}
         </div>
       </div>
     </motion.div>
@@ -648,7 +684,18 @@ function App() {
             </span>
           </div>
           <div className="h-3 w-px bg-slate-300 dark:bg-slate-700 hidden md:block"></div>
+          {marketStats?.last_sync && (
+            <div className="hidden lg:flex items-center space-x-1.5 text-slate-500">
+              <Clock className="w-3 h-3" />
+              <span>Last Sync: {new Date(marketStats.last_sync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              <span className={`ml-2 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${marketStats.sync_status === 'Healthy' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                {marketStats.sync_status}
+              </span>
+            </div>
+          )}
+          <div className="h-3 w-px bg-slate-300 dark:bg-slate-700 hidden lg:block"></div>
           <div className="hidden md:flex items-center space-x-1.5 text-slate-500">
+            <Zap className="w-3 h-3 text-yellow-500" />
             <span>Latency: 24ms</span>
           </div>
         </div>

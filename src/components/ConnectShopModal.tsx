@@ -47,7 +47,7 @@ const ConnectShopModal: React.FC<ConnectShopModalProps> = ({ isOpen, onClose, on
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={onClose}
-                className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-slate-400/20 dark:bg-slate-950/80 backdrop-blur-sm"
             />
 
             <AnimatePresence mode="wait">
@@ -68,8 +68,8 @@ const ConnectShopModal: React.FC<ConnectShopModalProps> = ({ isOpen, onClose, on
                                 <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                     <Store className="text-blue-500 w-8 h-8" />
                                 </div>
-                                <h2 className="text-2xl font-bold mb-2">Connect Your Shop</h2>
-                                <p className="text-slate-400">Sync your Daraz store with PakPick AI to get personalized market insights and inventory forecasting.</p>
+                                <h2 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Connect Your Shop</h2>
+                                <p className="text-slate-600 dark:text-slate-400">Sync your Daraz store with PakPick AI to get personalized market insights and inventory forecasting.</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -120,8 +120,8 @@ const ConnectShopModal: React.FC<ConnectShopModalProps> = ({ isOpen, onClose, on
                                         <RefreshCw className="absolute inset-0 m-auto w-8 h-8 text-blue-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold mb-2">Syncing Shop Inventory</h3>
-                                        <p className="text-slate-400 px-8 text-sm">Our AI is fetching your active listings and comparing them with current 2026 market trends.</p>
+                                        <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">Syncing Shop Inventory</h3>
+                                        <p className="text-slate-600 dark:text-slate-400 px-8 text-sm">Our AI is fetching your active listings and comparing them with current 2026 market trends.</p>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="h-1 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -143,8 +143,8 @@ const ConnectShopModal: React.FC<ConnectShopModalProps> = ({ isOpen, onClose, on
                                     <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                         <ShieldCheck className="text-blue-500 w-8 h-8" />
                                     </div>
-                                    <h3 className="text-xl font-bold">Permissions Required</h3>
-                                    <p className="text-slate-400 text-sm px-4">PakPick AI requires read-only access to your seller center to analyze pricing and stock levels.</p>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Permissions Required</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm px-4">PakPick AI requires read-only access to your seller center to analyze pricing and stock levels.</p>
                                     <div className="bg-blue-500/5 border border-blue-500/20 p-4 rounded-xl text-left space-y-3">
                                         <div className="flex items-center text-xs text-blue-400 font-bold">
                                             <ShieldCheck className="w-4 h-4 mr-2" /> Data is Encrypted (AES-256)
@@ -170,8 +170,8 @@ const ConnectShopModal: React.FC<ConnectShopModalProps> = ({ isOpen, onClose, on
                                 <CheckCircle2 className="text-green-400 w-10 h-10" />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Shop Successfully Synced</h3>
-                                <p className="text-slate-400 text-sm">Your store data is now integrated with PakPick Intelligence. We found <span className="text-blue-400 font-bold">4 competitive gaps</span> in your listings.</p>
+                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Shop Successfully Synced</h3>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm">Your store data is now integrated with PakPick Intelligence. We found <span className="text-blue-400 font-bold">4 competitive gaps</span> in your listings.</p>
                             </div>
                             <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex items-center space-x-4">
                                 <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center">

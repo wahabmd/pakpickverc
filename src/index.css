@@ -114,122 +114,140 @@ body {
     radial-gradient(at 100% 0%, hsla(30, 49%, 95%, 1) 0, transparent 50%);
 }
 
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Mesh Gradient & Background Overlays */
+.mesh-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-[data-theme='dark'] .glass-card {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+.mesh-blob {
+  position: absolute;
+  filter: blur(80px);
+  border-radius: 50%;
+  opacity: 0.15;
+  animation: blob-move 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-theme='light'] .glass-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 30px -5px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
+@keyframes blob-move {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(10%, 15%) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-5%, 10%) scale(0.9);
+  }
+
+  100% {
+    transform: translate(5%, -5%) scale(1.05);
+  }
 }
 
-.glass-card:hover {
-  border-color: hsl(var(--primary) / 0.3);
+/* Market Pulse Ticker */
+.ticker-wrap {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 0;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-  color: white;
-  padding: 0.875rem 2rem;
-  border-radius: var(--radius);
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-  display: inline-flex;
+.ticker {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-item {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  margin-right: 48px;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
-  filter: brightness(1.1);
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.title-gradient {
-  background: linear-gradient(to bottom right, var(--title-color) 40%, #64748b);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+/* 3D Pakistan Map Styles */
+.pak-map-container {
+  perspective: 1000px;
 }
 
-[data-theme='dark'] .title-gradient {
-  background: linear-gradient(to bottom right, #ffffff 40%, #94a3b8);
-  -webkit-background-clip: text;
-  background-clip: text;
+.pak-map-svg {
+  filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6));
+  transition: transform 0.1s ease-out;
+  animation: map-float 8s ease-in-out infinite;
 }
 
-[data-theme='light'] .text-slate-300 {
-  color: hsl(var(--secondary-text));
+@keyframes map-float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotateX(15deg) rotateY(-10deg) scale(1);
+  }
+
+  50% {
+    transform: translateY(-20px) rotateX(25deg) rotateY(-5deg) scale(1.05);
+  }
 }
 
-[data-theme='light'] .text-slate-400 {
-  color: hsl(var(--secondary-text) / 0.9);
+[data-theme='dark'] .pak-map-path {
+  fill: rgba(59, 130, 246, 0.15);
+  stroke: rgba(59, 130, 246, 0.8);
+  stroke-width: 2;
 }
 
-[data-theme='light'] .text-slate-500 {
-  color: hsl(var(--secondary-text) / 0.85);
+[data-theme='light'] .pak-map-path {
+  fill: rgba(59, 130, 246, 0.1);
+  stroke: rgba(59, 130, 246, 0.5);
+  stroke-width: 2;
 }
 
-.nav-glass {
-  background: var(--nav-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--nav-border);
+/* Advanced Glassmorphism */
+.glass-card-premium {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.nav-logo-text {
-  color: var(--title-color);
-  font-weight: 800;
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
+.glass-card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transition: transform 0.6s;
+  transform: translateX(-100%);
 }
 
-.btn-secondary {
-  background-color: var(--btn-secondary);
-  color: var(--btn-secondary-text);
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background-color: var(--btn-secondary-hover);
-  color: hsl(var(--foreground));
-}
-
-.nav-link {
-  color: var(--nav-link);
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.nav-link:hover {
-  color: var(--nav-link-hover);
-}
-
-.nav-action-btn {
-  background: var(--nav-btn-bg);
-  color: var(--nav-link);
-  transition: all 0.2s ease;
-}
-
-.nav-action-btn:hover {
-  background: hsl(var(--primary) / 0.1);
-  color: hsl(var(--primary));
+.glass-card-premium:hover::before {
+  transform: translateX(100%);
 }
 
 /* Animations */
@@ -251,9 +269,40 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
+/* Pulse Scan Indicator */
+.pulse-scan {
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border-radius: 50%;
+  position: relative;
+}
+
+.pulse-scan::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: inherit;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(3.5);
+    opacity: 0;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -263,11 +312,10 @@ body {
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
-  background-clip: content-box;
 }

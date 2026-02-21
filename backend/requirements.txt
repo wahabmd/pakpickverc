@@ -13,3 +13,4 @@ pymongo
 textblob
 certifi
 tinydb
+apscheduler
