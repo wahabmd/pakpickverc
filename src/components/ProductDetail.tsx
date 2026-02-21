@@ -8,8 +8,7 @@ import {
     DollarSign,
     Globe,
     Truck,
-    FileText,
-    Download
+    FileText
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
