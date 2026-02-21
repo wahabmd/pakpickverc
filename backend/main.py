@@ -666,7 +666,6 @@ async def export_strategy(product_id: str):
 
     doc.build(story)
     buffer.seek(0)
-    
     filename = f"Strategy_{product.get('title', 'Product')[:20].replace(' ', '_')}.pdf"
     
     return StreamingResponse(
@@ -674,6 +673,12 @@ async def export_strategy(product_id: str):
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+@app.get("/details/{product_id}")
+async def get_details(product_id: str):
+    """
+    Returns deep market analytics for a single product.
+    """
     from bson import ObjectId
     product = None
     
