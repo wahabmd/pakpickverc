@@ -272,12 +272,12 @@ function App() {
             <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/30 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
               <Search className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold mb-4 tracking-tight">Keyword Ingestion</h3>
+            <h3 className="text-2xl font-bold mb-4 tracking-tight">Keyword Discovery</h3>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Deep-scrape specific niches to reveal hidden competitors and price gaps.
+              Search specific keywords to find the most profitable products and price gaps.
             </p>
             <div className="flex items-center text-blue-400 font-bold group-hover:translate-x-2 transition-transform">
-              Ingest Marketplace <ChevronRight className="ml-2 w-4 h-4" />
+              Start Searching <ChevronRight className="ml-2 w-4 h-4" />
             </div>
           </motion.div>
 
