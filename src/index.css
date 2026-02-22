@@ -34,6 +34,11 @@
   --nav-link-hover: #ffffff;
   --nav-btn-bg: rgba(30, 41, 59, 0.5);
   --title-color: #ffffff;
+
+  /* Ticker Tokens */
+  --ticker-bg: rgba(15, 23, 42, 0.4);
+  --ticker-border: rgba(255, 255, 255, 0.05);
+  --ticker-text: #94a3b8;
 }
 
 [data-theme='light'] {
@@ -53,11 +58,16 @@
   --btn-secondary-text: #0f172a;
 
   /* Navigation Light Tokens */
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-border: rgba(15, 23, 42, 0.1);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-border: rgba(15, 23, 42, 0.08);
   --nav-link: #1e293b;
   --nav-link-hover: #020617;
   --nav-btn-bg: rgba(15, 23, 42, 0.05);
+
+  /* Ticker Light Tokens */
+  --ticker-bg: rgba(241, 245, 249, 0.9);
+  --ticker-border: rgba(15, 23, 42, 0.05);
+  --ticker-text: #475569;
 }
 
 * {
@@ -152,13 +162,21 @@ body {
   }
 }
 
+.nav-glass {
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--nav-border);
+  transition: all 0.3s ease;
+}
+
 /* Market Pulse Ticker */
 .ticker-wrap {
   width: 100%;
   overflow: hidden;
-  background: rgba(15, 23, 42, 0.4);
+  background: var(--ticker-bg);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--ticker-border);
   padding: 8px 0;
 }
 
@@ -172,7 +190,7 @@ body {
   display: flex;
   align-items: center;
   margin-right: 48px;
-  color: #94a3b8;
+  color: var(--ticker-text);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;

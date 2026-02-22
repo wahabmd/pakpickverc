@@ -231,7 +231,7 @@ function App() {
       </motion.div>
 
       {/* 2. Hero Content */}
-      <div className="relative z-10 text-center max-w-4xl pt-10">
+      <div className="relative z-10 text-center max-w-4xl pt-24">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -425,7 +425,7 @@ function App() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="max-w-7xl mx-auto px-4 pt-12"
+              className="max-w-7xl mx-auto px-4 pt-24"
             >
               <button
                 onClick={() => { setView('landing'); setProducts([]); }}
@@ -456,7 +456,7 @@ function App() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-7xl mx-auto px-4 pt-12 pb-20"
+              className="max-w-7xl mx-auto px-4 pt-24 pb-20"
             >
               <button onClick={() => setView('results')} className="mb-8 text-slate-500 dark:text-slate-400 hover:text-[#0f172a] dark:hover:text-white flex items-center">
                 <ChevronLeft className="w-4 h-4 mr-1" /> Back to Results
@@ -468,7 +468,7 @@ function App() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="max-w-7xl mx-auto px-4 pt-12 pb-20"
+              className="max-w-7xl mx-auto px-4 pt-24 pb-20"
             >
               <ComparisonView
                 products={selectedCompareProducts}
@@ -491,7 +491,7 @@ function App() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="max-w-7xl mx-auto px-4 pt-12"
+              className="max-w-7xl mx-auto px-4 pt-24"
             >
               <div className="flex items-center justify-between mb-8">
                 <button
