@@ -54,11 +54,21 @@ function App() {
     // Initial fetch
     fetchStats();
     fetchWatchlist();
+    fetchKeywords();
 
     // Poll every 5 seconds to keep connection status live
     const interval = setInterval(fetchStats, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchKeywords = async () => {
+    try {
+      const data = await api.getKeywords();
+      setTrendingKeywords(data.keywords || []);
+    } catch (e) {
+      console.error("Keywords fetch error:", e);
+    }
+  };
 
   const fetchWatchlist = async () => {
     try {
@@ -307,11 +317,11 @@ function App() {
       {/* 4. Market Pulse Ticker (Infinite Scroll) */}
       <div className="absolute bottom-0 w-full ticker-wrap">
         <div className="ticker">
-          {[...Array(20)].map((_, i) => (
+          {(trendingKeywords.length > 0 ? trendingKeywords : [{ keyword: "ELECTRONICS", growth: "+15%" }]).concat(trendingKeywords.length > 0 ? trendingKeywords : []).concat(trendingKeywords.length > 0 ? trendingKeywords : []).map((item, i) => (
             <div key={i} className="ticker-item flex items-center">
               <TrendingUp className="w-3 h-3 mr-2 text-green-500" />
-              <span>{trendingKeywords[i % (trendingKeywords.length || 1)]?.keyword || "ELECTRONICS"}</span>
-              <span className="ml-2 text-green-400 font-bold">+{Math.floor(Math.random() * 50)}%</span>
+              <span>{item.keyword}</span>
+              <span className="ml-2 text-green-400 font-bold">{item.growth}</span>
               <span className="mx-6 text-slate-700">|</span>
             </div>
           ))}

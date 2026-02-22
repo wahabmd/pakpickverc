@@ -356,7 +356,11 @@ async def get_trending_keywords():
         {"keyword": "Perfumes", "volume": "High", "growth": "+45%"},
         {"keyword": "Smart Watches", "volume": "Very High", "growth": "+12%"},
         {"keyword": "Earbuds", "volume": "High", "growth": "+28%"},
-        {"keyword": "Kitchen Decor", "volume": "Normal", "growth": "+15%"}
+        {"keyword": "Kitchen Decor", "volume": "Normal", "growth": "+15%"},
+        {"keyword": "Lawn Collection", "volume": "High", "growth": "+60%"},
+        {"keyword": "Gaming Keyboards", "volume": "Normal", "growth": "+22%"},
+        {"keyword": "Ring Lights", "volume": "High", "growth": "+35%"},
+        {"keyword": "Power Banks", "volume": "Very High", "growth": "+18%"}
     ]}
 
 # --- AUTOMATED BACKGROUND ANALYSIS ---
